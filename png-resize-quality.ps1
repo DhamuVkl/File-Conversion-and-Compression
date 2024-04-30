@@ -9,8 +9,8 @@ if (-not $magickExecutable) {
 function Resize-Compress-PNG {
     param (
         [string]$PNGFilePath,
-        [int]$DesiredSizeKB,
-        [int]$Quality = 80  # Set default quality to 80 (adjust as needed)
+        [int]$NewWidth = 1080,
+        [int]$Quality  
     )
 
     try {
@@ -29,25 +29,8 @@ function Resize-Compress-PNG {
         # Get the output directory path
         $OutputPath = [System.IO.Path]::GetDirectoryName($PNGFilePath)
 
-        # Use ImageMagick's identify command to get image information
-        $imageInfo = & $magickExecutable identify -format "%w %h" "$PNGFilePath"
-        $originalWidth, $originalHeight = $imageInfo -split ' '
-
-        # Calculate the desired width based on the desired file size
-        $originalSizeKB = (Get-Item $PNGFilePath).Length / 1KB
-        $newSizeBytes = $DesiredSizeKB * 1024
-        $scaleFactor = [math]::Sqrt($newSizeBytes / $originalSizeKB)
-        $newWidth = [math]::Round($originalWidth * $scaleFactor)
-
-        # Check if the dimensions exceed the limit
-        if ($newWidth -gt 16383) {
-            Write-Host "Resizing limit exceeded. Resizing image proportionally..."
-            $newWidth = 16383  # Set the maximum width
-            $scaleFactor = $newWidth / $originalWidth
-        }
-
         # Use ImageMagick to resize and compress the PNG file
-        $outputFile = & $magickExecutable convert "$PNGFilePath" -resize $newWidth -quality $Quality "$OutputPath\$PNGFileNameWithoutExtension-resized.png"
+        $outputFile = & $magickExecutable convert "$PNGFilePath" -resize $NewWidth -quality $Quality "$OutputPath\$PNGFileNameWithoutExtension-resized.png"
 
         Write-Host "Resize and compression completed. PNG file saved to: $OutputPath\$PNGFileNameWithoutExtension-resized.png"
     }
@@ -58,10 +41,10 @@ function Resize-Compress-PNG {
 
 # Prompt user for input
 $PNGFilePath = Read-Host "Enter the full path of the PNG file:"
-$DesiredSizeKB = Read-Host "Enter the desired size of the output file (in KB):"
+$Quality = Read-Host "Enter the desired Quality for the PNG (in 0-100):"
 
 # Call the function to resize and compress the PNG file
-Resize-Compress-PNG -PNGFilePath $PNGFilePath -DesiredSizeKB $DesiredSizeKB
+Resize-Compress-PNG -PNGFilePath $PNGFilePath -quality $Quality
 
 # Pause at the end of the script to see any error messages
 Pause

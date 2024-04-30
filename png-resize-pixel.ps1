@@ -33,7 +33,8 @@ function Resize-Compress-PNG {
         $outputFile = & $magickExecutable convert "$PNGFilePath" -resize $NewWidth -quality $Quality "$OutputPath\$PNGFileNameWithoutExtension-resized.png"
 
         Write-Host "Resize and compression completed. PNG file saved to: $OutputPath\$PNGFileNameWithoutExtension-resized.png"
-    } catch {
+    }
+    catch {
         Write-Host "An error occurred: $_"
     }
 }

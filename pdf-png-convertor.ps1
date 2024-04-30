@@ -34,7 +34,8 @@ function Convert-PDFtoPNG {
         $outputFiles = & $magickExecutable convert -density 300 -quality 100 -antialias "$PDFFilePath" "$OutputPath\$PDFFileNameWithoutExtension.png"
 
         Write-Host "Conversion completed. PNG file saved to: $OutputPath\$PDFFileNameWithoutExtension.png"
-    } catch {
+    }
+    catch {
         Write-Host "An error occurred: $_"
     }
 }
